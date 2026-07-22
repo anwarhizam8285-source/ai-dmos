@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import healthRoutes from "./routes/health.js";
 import authRoutes from "./routes/auth.js";
+import generateRoutes from "./routes/generate.js";
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 // Routes
 app.use("/health", healthRoutes);
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/generate", generateRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {
