@@ -1,0 +1,68 @@
+﻿rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users collection
+    match /users/{uid} {
+      allow read: if request.auth.uid == uid;
+      allow create: if request.auth.uid == uid;
+      allow update, delete: if request.auth.uid == uid;
+    }
+    
+    // Companies collection (Tenants)
+    match /companies/{companyId} {
+      allow read: if isCompanyMember(companyId);
+      allow create: if request.auth.uid != null;
+      allow update, delete: if isCompanyAdmin(companyId);
+    }
+    
+    // Knowledge base - tenant isolation
+    match /companies/{companyId}/knowledge/{documentId} {
+      allow read: if isCompanyMember(companyId);
+      allow create, update: if isCompanyMember(companyId);
+      allow delete: if isCompanyAdmin(companyId);
+    }
+    
+    // Agents - tenant isolation
+    match /companies/{companyId}/agents/{agentId} {
+      allow read: if isCompanyMember(companyId);
+      allow create, update, delete: if isCompanyAdmin(companyId);
+    }
+    
+    // Content - tenant isolation
+    match /companies/{companyId}/content/{contentId} {
+      allow read: if isCompanyMember(companyId);
+      allow create, update: if isCompanyMember(companyId);
+      allow delete: if isContentOwner(companyId, contentId) || isCompanyAdmin(companyId);
+    }
+    
+    // Templates - tenant isolation
+    match /companies/{companyId}/templates/{templateId} {
+      allow read: if isCompanyMember(companyId);
+      allow create, update, delete: if isCompanyAdmin(companyId);
+    }
+    
+    // Usage stats - tenant isolation
+    match /companies/{companyId}/usage/{date} {
+      allow read: if isCompanyAdmin(companyId);
+      allow create, update: if request.auth.uid != null;
+      allow delete: if isCompanyAdmin(companyId);
+    }
+    
+    function isCompanyMember(companyId) {
+      return request.auth.uid != null &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.tenantId == companyId;
+    }
+    
+    function isCompanyAdmin(companyId) {
+      return request.auth.uid != null &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.tenantId == companyId &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function isContentOwner(companyId, contentId) {
+      return request.auth.uid != null &&
+             get(/databases/$(database)/documents/companies/$(companyId)/content/$(contentId)).data.createdBy == request.auth.uid;
+    }
+  }
+}
