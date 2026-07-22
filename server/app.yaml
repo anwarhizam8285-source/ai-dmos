@@ -1,0 +1,27 @@
+﻿runtime: nodejs24
+env: flex
+
+automatic_scaling:
+  min_instances: 1
+  max_instances: 10
+
+env_variables:
+  PORT: "3000"
+  NODE_ENV: "production"
+  LOG_LEVEL: "info"
+  FIREBASE_PROJECT_ID: "ai-dmos-production"
+
+vpc_connector: "ai-dmos-connector"
+
+handlers:
+  - url: "/.*"
+    script: auto
+    secure: always
+    redirect_http_response_code: 301
+
+health_check:
+  path: "/health"
+  check_interval_sec: 30
+  timeout_sec: 10
+  healthy_threshold: 2
+  unhealthy_threshold: 3
