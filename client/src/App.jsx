@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import CompanySetup from "./components/company/CompanySetup";
+import Dashboard from "./components/dashboard/Dashboard";
 import "./App.css";
 
 function AppContent() {
@@ -32,22 +33,7 @@ function AppContent() {
     );
   }
 
-  return (
-    <div className="dashboard">
-      <h1>Welcome to AI-DMOS</h1>
-      <p>Company ID: {companyId}</p>
-      <p>Dashboard coming soon...</p>
-      <button
-        onClick={() => {
-          localStorage.removeItem("token");
-          localStorage.removeItem("companyId");
-          window.location.reload();
-        }}
-      >
-        Logout
-      </button>
-    </div>
-  );
+  return <Dashboard />;
 }
 
 export default function App() {
