@@ -1,0 +1,92 @@
+﻿name: Security Scanning
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  # Job 1: Dependency Check
+  dependency-check:
+    name: Dependency Vulnerability Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Check client dependencies
+        working-directory: ./client
+        run: npm audit --audit-level=moderate || true
+
+      - name: Check server dependencies
+        working-directory: ./server
+        run: npm audit --audit-level=moderate || true
+
+  # Job 2: Code Quality
+  code-quality:
+    name: Code Quality Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install client dependencies
+        working-directory: ./client
+        run: npm ci
+
+      - name: Run client linter
+        working-directory: ./client
+        run: npm run lint
+
+      - name: Install server dependencies
+        working-directory: ./server
+        run: npm ci
+
+      - name: Run server linter
+        working-directory: ./server
+        run: npm run lint
+
+  # Job 3: Container Security
+  container-security:
+    name: Container Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        working-directory: ./server
+        run: docker build -t ai-dmos-backend:latest .
+
+      - name: Run Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ai-dmos-backend:latest'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
