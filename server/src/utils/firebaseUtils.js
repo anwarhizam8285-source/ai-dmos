@@ -187,3 +187,11 @@ export async function getUsageStats(companyId, startDate, endDate) {
     .get();
   return snapshot.docs.map((doc) => doc.data());
 }
+
+// Delete Knowledge document
+export async function deleteKnowledge(companyId, documentId) {
+  return await db
+    .collection(FIRESTORE_COLLECTIONS.KNOWLEDGE(companyId))
+    .doc(documentId)
+    .delete();
+}
