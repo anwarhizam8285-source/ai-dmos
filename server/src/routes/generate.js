@@ -27,11 +27,11 @@ router.post("/caption", verifyToken, async (req, res) => {
 
     // Log usage
     const today = new Date().toISOString().split("T")[0];
-    const costData = calculateTokenCost(
+    const costData = await calculateTokenCost(
       result.usage.inputTokens,
       result.usage.outputTokens
     );
-    
+
     await logUsage(companyId, today, {
       tokensUsed: result.usage.inputTokens + result.usage.outputTokens,
       cost: parseFloat(costData.costRM),
@@ -72,7 +72,7 @@ router.post("/content", verifyToken, async (req, res) => {
 
     // Log usage
     const today = new Date().toISOString().split("T")[0];
-    const costData = calculateTokenCost(
+    const costData = await calculateTokenCost(
       result.usage.inputTokens,
       result.usage.outputTokens
     );

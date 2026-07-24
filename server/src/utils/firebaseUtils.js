@@ -67,6 +67,16 @@ export async function getKnowledge(companyId, documentId) {
   return doc.exists ? doc.data() : null;
 }
 
+export async function updateKnowledge(companyId, documentId, updates) {
+  return await db
+    .collection(FIRESTORE_COLLECTIONS.KNOWLEDGE(companyId))
+    .doc(documentId)
+    .update({
+      ...updates,
+      updatedAt: new Date(),
+    });
+}
+
 export async function listKnowledge(companyId, filters = {}) {
   let query = db.collection(FIRESTORE_COLLECTIONS.KNOWLEDGE(companyId));
 
@@ -168,15 +178,31 @@ export async function listTemplates(companyId) {
 
 // Usage tracking
 export async function logUsage(companyId, date, usageData) {
-  return await db
-    .collection(FIRESTORE_COLLECTIONS.USAGE(companyId))
-    .doc(date)
-    .set({
-      date,
-      companyId,
-      ...usageData,
-      createdAt: new Date(),
+  const docRef = db.collection(FIRESTORE_COLLECTIONS.USAGE(companyId)).doc(date);
+  const doc = await docRef.get();
+
+  if (doc.exists) {
+    const existing = doc.data();
+    return await docRef.update({
+      tokensUsed: (existing.tokensUsed || 0) + (usageData.tokensUsed || 0),
+      cost: (existing.cost || 0) + (usageData.cost || 0),
+      requestsCount: (existing.requestsCount || 0) + (usageData.requestsCount || 0),
+      contentGenerated: (existing.contentGenerated || 0) + (usageData.contentGenerated || 0),
+      apiCallsCount: (existing.apiCallsCount || 0) + (usageData.apiCallsCount || 0),
+      updatedAt: new Date(),
     });
+  }
+
+  return await docRef.set({
+    date,
+    companyId,
+    tokensUsed: usageData.tokensUsed || 0,
+    cost: usageData.cost || 0,
+    requestsCount: usageData.requestsCount || 0,
+    contentGenerated: usageData.contentGenerated || 0,
+    apiCallsCount: usageData.apiCallsCount || 0,
+    createdAt: new Date(),
+  });
 }
 
 export async function getUsageStats(companyId, startDate, endDate) {
@@ -193,5 +219,13 @@ export async function deleteKnowledge(companyId, documentId) {
   return await db
     .collection(FIRESTORE_COLLECTIONS.KNOWLEDGE(companyId))
     .doc(documentId)
+    .delete();
+}
+
+// Delete Content document
+export async function deleteContent(companyId, contentId) {
+  return await db
+    .collection(FIRESTORE_COLLECTIONS.CONTENT(companyId))
+    .doc(contentId)
     .delete();
 }
