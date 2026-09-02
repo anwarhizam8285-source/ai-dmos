@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
+import CampaignPerformance from "./CampaignPerformance";
+import BillingSnapshot from "./BillingSnapshot";
 import "./Analytics.css";
 
 const RANGE_OPTIONS = [
@@ -122,6 +124,9 @@ export default function Analytics() {
           <p className="empty-state">No usage data yet</p>
         )}
       </div>
+
+      <CampaignPerformance />
+      <BillingSnapshot />
     </div>
   );
 }

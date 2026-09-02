@@ -19,12 +19,12 @@ const TABS = [
   { key: "analytics", label: "Analytics" },
 ];
 
-export default function Dashboard() {
+export default function Dashboard({ initialTab }) {
   const { token } = useAuth();
-  const initialTab = /[?&](meta_connected|meta_error)=/.test(window.location.search)
-    ? "meta-ads"
-    : "overview";
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const resolvedInitialTab =
+    initialTab ||
+    (/[?&](meta_connected|meta_error)=/.test(window.location.search) ? "meta-ads" : "overview");
+  const [activeTab, setActiveTab] = useState(resolvedInitialTab);
   const [company, setCompany] = useState(null);
   const [stats, setStats] = useState({
     tokensUsed: 0,

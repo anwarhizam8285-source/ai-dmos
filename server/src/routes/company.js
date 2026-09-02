@@ -2,6 +2,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { verifyToken } from "../middlewares/authMiddleware.js";
 import { createCompany, getCompany, updateCompany } from "../utils/firebaseUtils.js";
+import { sendWelcomeEmail } from "../services/emailService.js";
 
 const router = express.Router();
 
@@ -37,6 +38,12 @@ router.post("/", verifyToken, async (req, res) => {
     };
 
     await createCompany(companyId, companyData);
+
+    // Best-effort - never fails company creation. No-ops with a console
+    // warning until GMAIL_USER/GMAIL_APP_PASSWORD are configured.
+    sendWelcomeEmail(email, name).catch((err) =>
+      console.error("Welcome email failed (company still created):", err.message)
+    );
 
     res.status(201).json({
       success: true,

@@ -1,0 +1,122 @@
+.onboarding-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.onboarding-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2.5rem;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.onboarding-progress {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.progress-dot {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: #e0e2e5;
+  transition: background 0.2s ease;
+}
+
+.progress-dot.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.onboarding-card h2 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.onboarding-description {
+  color: #666;
+  line-height: 1.6;
+  margin: 0 0 2rem 0;
+}
+
+.onboarding-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.btn-primary {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+  padding: 0.75rem 1.25rem;
+  background: #f0f2f5;
+  color: #333;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #e0e2e5;
+}
+
+.btn-skip {
+  padding: 0.75rem 1.25rem;
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  font-weight: 600;
+  margin-right: auto;
+}
+
+.btn-skip:hover {
+  color: #666;
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .onboarding-card {
+    padding: 1.75rem;
+  }
+
+  .onboarding-actions {
+    justify-content: stretch;
+  }
+
+  .onboarding-actions button {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .btn-skip {
+    order: 10;
+    flex-basis: 100%;
+    margin-right: 0;
+  }
+}
