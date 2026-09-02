@@ -455,17 +455,281 @@
   font-size: 0.85rem;
 }
 
+/* Optimization dashboard (Sprint 4) */
+
+.optimization-dashboard {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.opt-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.opt-header h2 {
+  margin: 0 0 0.25rem 0;
+  color: #333;
+  font-size: 1.6rem;
+}
+
+.opt-metrics {
+  margin-bottom: 1.5rem;
+}
+
+.opt-stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.opt-stats .stat {
+  background: #f7fafc;
+  padding: 0.85rem 1.25rem;
+  border-radius: 8px;
+  min-width: 140px;
+}
+
+.opt-stats .stat .label {
+  display: block;
+  font-size: 0.75rem;
+  color: #718096;
+  margin-bottom: 0.2rem;
+}
+
+.opt-stats .stat strong {
+  display: block;
+  font-size: 1.4rem;
+  color: #667eea;
+}
+
+.opt-stats .btn-primary {
+  margin-left: auto;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #667eea;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+.empty-state {
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+  color: #166534;
+  margin-bottom: 1.5rem;
+}
+
+.recommendations-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.recommendation-card {
+  background: #fafafa;
+  border: 1px solid #e2e8f0;
+  padding: 1.25rem;
+  border-radius: 10px;
+  position: relative;
+}
+
+.priority-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  background: #f0f2f5;
+  color: #718096;
+}
+
+.priority-badge.priority-5,
+.priority-badge.priority-4 {
+  background: #fed7d7;
+  color: #c53030;
+}
+
+.priority-badge.priority-3 {
+  background: #feebc8;
+  color: #b7791f;
+}
+
+.recommendation-card h4 {
+  margin: 0 0.5rem 0.5rem 0;
+  font-size: 1.05rem;
+  color: #1a202c;
+  padding-right: 5rem;
+}
+
+.recommendation-card .description {
+  color: #718096;
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.action-details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  padding: 0.85rem;
+  background: white;
+  border-radius: 6px;
+  margin-bottom: 0.85rem;
+}
+
+.action-details .detail {
+  display: flex;
+  flex-direction: column;
+}
+
+.action-details .label {
+  font-size: 0.7rem;
+  color: #718096;
+  margin-bottom: 0.2rem;
+}
+
+.action-details strong {
+  font-size: 0.95rem;
+  color: #1a202c;
+}
+
+.action-details strong.positive {
+  color: #1e8e4f;
+}
+
+.action-details strong.negative {
+  color: #c33;
+}
+
+.impact {
+  margin-bottom: 0.85rem;
+}
+
+.impact .label {
+  display: block;
+  font-size: 0.7rem;
+  color: #718096;
+  margin-bottom: 0.3rem;
+}
+
+.impact-badge {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #ede9fe;
+  color: #667eea;
+}
+
+.impact-badge.high {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.impact-badge .confidence {
+  font-size: 0.65rem;
+  opacity: 0.75;
+}
+
+.rationale {
+  background: #f0f4ff;
+  padding: 0.75rem 0.9rem;
+  border-left: 3px solid #667eea;
+  border-radius: 4px;
+  margin-bottom: 0.85rem;
+  font-size: 0.85rem;
+  color: #2d3748;
+}
+
+.rationale p {
+  margin: 0;
+}
+
+.rec-status-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.rec-status-row .note {
+  color: #999;
+  font-size: 0.8rem;
+}
+
+.status-badge.status-applied {
+  background: #e6f9ee;
+  color: #1e8e4f;
+}
+
+.status-badge.status-rejected {
+  background: #fee;
+  color: #c33;
+}
+
+.status-badge.status-undone {
+  background: #f0f2f5;
+  color: #718096;
+}
+
+.status-badge.status-pending {
+  background: #fff4e0;
+  color: #b7791f;
+}
+
+.opt-history {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.opt-history h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
 @media (max-width: 768px) {
   .meta-ads-container {
     padding: 1rem;
   }
 
-  .meta-ads-card {
+  .meta-ads-card,
+  .optimization-dashboard {
     padding: 1.5rem;
   }
 
   .form-row,
-  .metrics {
+  .metrics,
+  .action-details {
     grid-template-columns: 1fr;
+  }
+
+  .opt-stats .btn-primary {
+    margin-left: 0;
+    width: 100%;
   }
 }

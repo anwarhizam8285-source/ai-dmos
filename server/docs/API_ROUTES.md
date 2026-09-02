@@ -1,4 +1,4 @@
-# Meta Ads Agent — API Routes (Sprint 2 + Sprint 3)
+# Meta Ads Agent — API Routes (Sprint 2 + Sprint 3 + Sprint 4)
 
 Base path: `/api/v1/agents/meta-ads`
 
@@ -65,13 +65,43 @@ Campaign + AdSet are real. Marks the Firestore record `ACTIVE` on success.
 Lists campaign drafts for a company from Firestore.
 **200** `{ success: true, campaigns: [...] }`
 
-### `GET /performance?campaignId=...&dateRange=30d`
-**Placeholder** — returns a zeroed summary shape. Real Meta Insights aggregation
-lands in Sprint 4.
+### `GET /performance?companyId=...&campaignId=...&dateRange=30d` (Sprint 4)
+Real daily_performance history, written by the nightly monitoring cron
+(`performanceMonitoringService.js`). `dateRange` is a number of days (e.g. `30`).
+**200** `{ success: true, campaignId, summary: { spend, impressions, clicks, results, ctr, cpc, roas }, daily: [...] }`
 
-### `POST /optimize`
-Body: `{ campaignId, analysisDepth? }`. **Placeholder** — returns `recommendations: []`.
-Real Claude-driven recommendations land in Sprint 4.
+### `POST /optimize` (Sprint 4)
+Body: `{ companyId, campaignId }`. Claude analyzes up to 30 days of stored
+`daily_performance` and generates 1-5 saved, `PENDING` recommendations. Requires
+the campaign to have `metaCampaignId` set (i.e. actually launched) and at least
+one day of monitored performance.
+**200** `{ success: true, campaignId, avgMetrics, trends, recommendations: [...], usage, cost, message }`
+**409** not launched on Meta yet, or no performance data yet.
+
+### `GET /recommendations?companyId=...&campaignId=...&status=PENDING` (Sprint 4)
+`status` is optional (omit for all statuses).
+**200** `{ success: true, campaignId, recommendations: [...], count }`
+
+### `POST /apply-recommendation` (Sprint 4)
+Body: `{ companyId, campaignId, recommendationId }`. Applies one `PENDING`
+recommendation to the real campaign/ad set on Meta (`recommendationService.js`
+dispatches by `type`; see `OPTIMIZATION_ENGINE.md`). `REFRESH_CREATIVE` always
+fails — it requires a human to supply new creative assets.
+**200** `{ success: true, campaignId, recommendationId, message, result }`
+**409** already applied/rejected, or Meta not connected.
+
+### `POST /reject-recommendation` (Sprint 4)
+Body: `{ companyId, campaignId, recommendationId, reason? }`. Firestore-only,
+no Meta call.
+**200** `{ success: true, campaignId, recommendationId, message }`
+
+### `POST /undo-recommendation` (Sprint 4)
+Body: `{ companyId, campaignId, recommendationId }`. Reverses an `APPLIED`
+recommendation using the `action.previousValue` captured at apply time — only
+within a 24-hour window.
+**200** `{ success: true, campaignId, recommendationId, message }`
+**400** not APPLIED, window expired, or no previousValue recorded.
+**409** Meta not connected.
 
 ### `GET /analytics?companyId=...&dateRange=30d`
 **Placeholder** — returns a zeroed summary shape. Real cross-campaign analytics

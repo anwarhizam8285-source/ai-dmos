@@ -5,6 +5,7 @@ import { useMetaAuth } from "../../hooks/useMetaAuth";
 import ConnectMeta from "./ConnectMeta";
 import CampaignForm from "./CampaignForm";
 import CampaignPreview from "./CampaignPreview";
+import OptimizationDashboard from "./OptimizationDashboard";
 import "./MetaAds.css";
 
 const STATUS_LABEL = {
@@ -13,7 +14,7 @@ const STATUS_LABEL = {
   draft: "Draft",
 };
 
-function CampaignsList({ campaigns, onCreateNew }) {
+function CampaignsList({ campaigns, onCreateNew, onOptimize }) {
   return (
     <div className="meta-ads-card campaigns-list-card">
       <div className="campaigns-list-header">
@@ -39,6 +40,11 @@ function CampaignsList({ campaigns, onCreateNew }) {
                 <span>RM{c.budget?.amount ?? "-"} {c.budget?.type?.toLowerCase()}</span>
                 <span>{c.objective}</span>
                 {c.metaCampaignId && <span>Meta ID: {c.metaCampaignId}</span>}
+                {c.metaCampaignId && (
+                  <button className="btn-link" onClick={() => onOptimize(c)}>
+                    📊 Optimize
+                  </button>
+                )}
               </div>
             </div>
           ))}
@@ -53,11 +59,12 @@ export default function MetaAdsAgent() {
   const companyId = localStorage.getItem("companyId");
   const { connected, loading: connectionLoading } = useMetaAuth();
 
-  const [view, setView] = useState("list"); // list | form | preview | success
+  const [view, setView] = useState("list"); // list | form | preview | success | optimize
   const [campaigns, setCampaigns] = useState([]);
   const [campaignsLoading, setCampaignsLoading] = useState(true);
   const [generated, setGenerated] = useState(null); // { campaignId, generatedCampaign }
   const [launchResult, setLaunchResult] = useState(null);
+  const [optimizingCampaign, setOptimizingCampaign] = useState(null);
 
   async function fetchCampaigns() {
     if (!companyId || !token) return;
@@ -104,9 +111,29 @@ export default function MetaAdsAgent() {
               <div className="spinner" /> Loading campaigns...
             </div>
           ) : (
-            <CampaignsList campaigns={campaigns} onCreateNew={() => setView("form")} />
+            <CampaignsList
+              campaigns={campaigns}
+              onCreateNew={() => setView("form")}
+              onOptimize={(campaign) => {
+                setOptimizingCampaign(campaign);
+                setView("optimize");
+              }}
+            />
           )}
         </>
+      )}
+
+      {view === "optimize" && optimizingCampaign && (
+        <OptimizationDashboard
+          companyId={companyId}
+          campaignId={optimizingCampaign.campaignId}
+          campaignName={optimizingCampaign.name}
+          metaConnected={connected}
+          onBack={() => {
+            setOptimizingCampaign(null);
+            setView("list");
+          }}
+        />
       )}
 
       {view === "form" && (

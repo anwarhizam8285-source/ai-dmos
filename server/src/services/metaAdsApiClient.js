@@ -155,6 +155,18 @@ export class MetaApiClient {
     return { adSetId: result.id, status };
   }
 
+  async getAdSet(adSetId, fields = "id,name,status,daily_budget,lifetime_budget,bid_strategy,targeting") {
+    return this.request("get", `/${adSetId}`, { params: { fields } });
+  }
+
+  async updateAdSet(adSetId, updates) {
+    const params = { ...updates };
+    if (params.targeting && typeof params.targeting !== "string") {
+      params.targeting = JSON.stringify(params.targeting);
+    }
+    return this.request("post", `/${adSetId}`, { params });
+  }
+
   async createAdCreative({ name, pageId, message, headline, description, link, callToAction }) {
     if (!this.adAccountId) {
       throw new Error("MetaApiClient requires an adAccountId to create ad creatives");

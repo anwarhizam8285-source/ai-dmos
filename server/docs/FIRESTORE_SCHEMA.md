@@ -54,14 +54,22 @@ should pick one casing and migrate.
 
 ## companies/{companyId}/campaigns/{campaignId}/daily_performance/{date}
 
-One document per campaign per day (`date` as `YYYY-MM-DD`). Not yet written by any
-route — Sprint 4 will populate this from Meta Insights on a schedule.
+One document per campaign per day (`date` as `YYYY-MM-DD`). Written by the
+nightly cron (`performanceMonitoringService.js`, scheduled in `server.js` via
+`node-cron`, `0 0 * * *` Asia/Kuala_Lumpur) for every `ACTIVE` campaign with a
+`metaCampaignId`, one company at a time so one company's Meta token/API
+failure never blocks another's. `vs_yesterday` is computed against the
+previous calendar day's stored doc, if any.
 
 ## companies/{companyId}/campaigns/{campaignId}/recommendations/{recommendationId}
 
-AI-generated optimization suggestions (budget changes, pausing underperforming ad
-sets, creative refresh). Not yet written by any route — Sprint 4's `/optimize`
-endpoint will generate and persist these via the CEO/Content agent pipeline.
+AI-generated optimization suggestions (budget changes, pausing the ad set,
+widening audience targeting, changing bid strategy, or flagging creative
+refresh). Written by `POST /optimize` (Claude call via
+`optimizationEngineService.js`), updated by `/apply-recommendation`,
+`/reject-recommendation`, and `/undo-recommendation`
+(`recommendationService.js` does the actual Meta API dispatch). See
+`server/docs/OPTIMIZATION_ENGINE.md`.
 
 ## Security rules
 

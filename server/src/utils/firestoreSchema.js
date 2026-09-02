@@ -200,9 +200,10 @@ export const FIRESTORE_SCHEMA = {
     indexes: ["companyId", "status", "createdAt"],
   },
 
-  // Daily performance snapshots per campaign
+  // Daily performance snapshots per campaign (populated by the nightly cron -
+  // see performanceMonitoringService.js - Sprint 4)
   dailyPerformance: {
-    collection: "campaigns/{campaignId}/daily_performance",
+    collection: "companies/{companyId}/campaigns/{campaignId}/daily_performance",
     doc: "{date}",
     fields: {
       date: "string (YYYY-MM-DD, primary key)",
@@ -217,30 +218,37 @@ export const FIRESTORE_SCHEMA = {
       reach: "number",
       conversionValue: "number",
       roas: "number",
-      qualityScore: "number",
-      vs_yesterday: "object ({ spend_change, ctr_change, cpc_change, roas_change })",
+      qualityScore:
+        "null - reserved. Meta's campaign-level insights fields this codebase requests don't expose a quality score; left unpopulated rather than faked",
+      vs_yesterday: "object ({ spend_change, ctr_change, cpc_change, roas_change }) - each a percent or null if there's no prior day",
+      updatedAt: "timestamp",
     },
     indexes: ["date"],
   },
 
-  // AI-generated optimization recommendations per campaign
+  // AI-generated optimization recommendations per campaign (Sprint 4 - see
+  // optimizationEngineService.js / recommendationService.js)
   recommendations: {
-    collection: "campaigns/{campaignId}/recommendations",
+    collection: "companies/{companyId}/campaigns/{campaignId}/recommendations",
     doc: "{recommendationId}",
     fields: {
       recommendationId: "string (primary key)",
+      campaignId: "string (parent)",
       title: "string",
       description: "string",
-      type: "enum: BUDGET_INCREASE|PAUSE_ADSET|CREATIVE_REFRESH",
-      expectedImpact: "object ({ ctrChange, roasChange, confidenceLevel })",
-      action: "object ({ targetAdSet, currentBudget, suggestedBudget, change, changePercent })",
-      status: "enum: PENDING|APPLIED|REJECTED|EXPIRED",
+      type: "enum: BUDGET_INCREASE|BUDGET_DECREASE|PAUSE_ADSET|EXPAND_AUDIENCE|REFRESH_CREATIVE|CHANGE_BIDDING",
+      priority: "number (1-5, 5 = most impactful)",
+      expectedImpact: "object ({ metric, change, confidence })",
+      action:
+        "object ({ targetAdSet, currentValue, suggestedValue, changePercent, rationale, previousValue }) - previousValue is null until APPLIED, then captures whatever's needed to undo",
+      status: "enum: PENDING|APPLIED|REJECTED|EXPIRED|UNDONE",
       appliedAt: "timestamp | null",
-      appliedBy: "string | null",
+      appliedBy: "string (uid) | null",
+      undoneAt: "timestamp | null",
       generatedBy: "string (claude-ai)",
       generatedAt: "timestamp",
-      expiresAt: "timestamp",
-      logs: "array<object>",
+      expiresAt: "timestamp (generatedAt + 7 days)",
+      logs: "array<object> ({ action: GENERATED|APPLIED|REJECTED|UNDONE, timestamp, details })",
     },
     indexes: ["status", "generatedAt"],
   },

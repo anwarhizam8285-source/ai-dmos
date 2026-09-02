@@ -1,3 +1,5 @@
+import { centsFromRM } from "../utils/currency.js";
+
 const CTA_MAP = {
   "Learn More": "LEARN_MORE",
   "Sign Up": "SIGN_UP",
@@ -13,10 +15,6 @@ const OBJECTIVE_TO_OPTIMIZATION_GOAL = {
   TRAFFIC: "LINK_CLICKS",
   AWARENESS: "REACH",
 };
-
-function centsFromRM(amount) {
-  return Math.round(Number(amount) * 100);
-}
 
 export function buildTargeting(audience, resolvedInterests = []) {
   const targeting = {

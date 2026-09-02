@@ -277,6 +277,80 @@ export async function updateCampaign(companyId, campaignId, updates) {
     });
 }
 
+// Daily performance snapshots (Sprint 4)
+export async function saveDailyPerformance(companyId, campaignId, date, data) {
+  return await db
+    .collection(FIRESTORE_COLLECTIONS.DAILY_PERFORMANCE(companyId, campaignId))
+    .doc(date)
+    .set({ ...data, updatedAt: new Date() }, { merge: true });
+}
+
+export async function getDailyPerformance(companyId, campaignId, date) {
+  const doc = await db
+    .collection(FIRESTORE_COLLECTIONS.DAILY_PERFORMANCE(companyId, campaignId))
+    .doc(date)
+    .get();
+  return doc.exists ? doc.data() : null;
+}
+
+// Returns oldest-first, capped at `limitDays` most recent days.
+export async function listPerformanceHistory(companyId, campaignId, limitDays = 30) {
+  const snapshot = await db
+    .collection(FIRESTORE_COLLECTIONS.DAILY_PERFORMANCE(companyId, campaignId))
+    .orderBy("date", "desc")
+    .limit(limitDays)
+    .get();
+  return snapshot.docs.map((doc) => doc.data()).sort((a, b) => (a.date < b.date ? -1 : 1));
+}
+
+// Optimization recommendations (Sprint 4)
+export async function createRecommendation(companyId, campaignId, recommendationId, data) {
+  return await db
+    .collection(FIRESTORE_COLLECTIONS.RECOMMENDATIONS(companyId, campaignId))
+    .doc(recommendationId)
+    .set({ recommendationId, campaignId, ...data });
+}
+
+export async function getRecommendation(companyId, campaignId, recommendationId) {
+  const doc = await db
+    .collection(FIRESTORE_COLLECTIONS.RECOMMENDATIONS(companyId, campaignId))
+    .doc(recommendationId)
+    .get();
+  return doc.exists ? doc.data() : null;
+}
+
+// Sorted by priority (desc) in-memory rather than via Firestore orderBy, so
+// filtering by status never requires a composite index.
+export async function listRecommendations(companyId, campaignId, filters = {}) {
+  let query = db.collection(FIRESTORE_COLLECTIONS.RECOMMENDATIONS(companyId, campaignId));
+  if (filters.status) {
+    query = query.where("status", "==", filters.status);
+  }
+  const snapshot = await query.get();
+  return snapshot.docs.map((doc) => doc.data()).sort((a, b) => (b.priority || 0) - (a.priority || 0));
+}
+
+export async function updateRecommendation(companyId, campaignId, recommendationId, updates) {
+  return await db
+    .collection(FIRESTORE_COLLECTIONS.RECOMMENDATIONS(companyId, campaignId))
+    .doc(recommendationId)
+    .update(updates);
+}
+
+// Cross-company helpers for the daily performance monitoring job (Sprint 4)
+export async function listCompanies() {
+  const snapshot = await db.collection(FIRESTORE_COLLECTIONS.COMPANIES).get();
+  return snapshot.docs.map((doc) => doc.data());
+}
+
+export async function listActiveCampaignsWithMeta(companyId) {
+  const snapshot = await db
+    .collection(FIRESTORE_COLLECTIONS.CAMPAIGNS(companyId))
+    .where("status", "==", "ACTIVE")
+    .get();
+  return snapshot.docs.map((doc) => doc.data()).filter((c) => c.metaCampaignId);
+}
+
 // Delete Knowledge document
 export async function deleteKnowledge(companyId, documentId) {
   return await db
