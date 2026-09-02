@@ -23,7 +23,7 @@ export default function Analytics() {
       setLoading(true);
       setError("");
       try {
-        const res = await axios.get("http://localhost:3000/api/v1/analytics/summary", {
+        const res = await axios.get("/api/v1/analytics/summary", {
           params: { companyId, days },
           headers: { Authorization: `Bearer ${token}` },
         });

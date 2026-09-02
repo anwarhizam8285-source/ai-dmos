@@ -38,6 +38,8 @@ coverage/
 # Firebase
 .firebase/
 .firebaserc
+firebase-key.json
+server/firebase-key.json
 
 # Docker
 .dockerignore

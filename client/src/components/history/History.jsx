@@ -32,7 +32,7 @@ export default function History() {
         if (typeFilter) params.type = typeFilter;
         if (platformFilter) params.platform = platformFilter;
 
-        const res = await axios.get("http://localhost:3000/api/v1/content", {
+        const res = await axios.get("/api/v1/content", {
           params,
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -60,7 +60,7 @@ export default function History() {
     const updatedMetadata = { ...item.metadata, favorite: !item.metadata?.favorite };
     try {
       await axios.put(
-        `http://localhost:3000/api/v1/content/${item.contentId}`,
+        `/api/v1/content/${item.contentId}`,
         { companyId, metadata: updatedMetadata },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -75,7 +75,7 @@ export default function History() {
   const handleDelete = async (contentId) => {
     if (!window.confirm("Delete this content permanently?")) return;
     try {
-      await axios.delete(`http://localhost:3000/api/v1/content/${contentId}`, {
+      await axios.delete(`/api/v1/content/${contentId}`, {
         headers: { Authorization: `Bearer ${token}` },
         data: { companyId },
       });

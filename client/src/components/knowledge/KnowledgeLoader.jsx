@@ -35,7 +35,7 @@ export default function KnowledgeLoader() {
 
         // Send to backend
         const response = await axios.post(
-          `http://localhost:3000/api/v1/knowledge`,
+          `/api/v1/knowledge`,
           {
             companyId,
             title: file.name.replace(".md", ""),
@@ -69,7 +69,7 @@ export default function KnowledgeLoader() {
 
     try {
       await axios.delete(
-        `http://localhost:3000/api/v1/knowledge/${documentId}`,
+        `/api/v1/knowledge/${documentId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

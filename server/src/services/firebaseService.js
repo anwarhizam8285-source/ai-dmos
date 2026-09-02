@@ -1,36 +1,50 @@
-﻿import admin from "firebase-admin";
+﻿import { initializeApp, getApp, getApps } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
+import { cert } from "firebase-admin/app";
 import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config({ path: ".env.local" });
 
-// Skip Firebase init for now - will setup after Firebase project created
-// For development, we'll just export stubs
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 let authInstance = null;
 let dbInstance = null;
 
 try {
-  // Only initialize if Firebase credentials available
-  if (process.env.FIREBASE_CREDENTIALS) {
-    const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
-    authInstance = admin.auth();
-    dbInstance = admin.firestore();
+  let serviceAccount = null;
+
+  if (process.env.FIREBASE_CREDENTIALS_BASE64) {
+    serviceAccount = JSON.parse(
+      Buffer.from(process.env.FIREBASE_CREDENTIALS_BASE64, "base64").toString("utf8")
+    );
   } else {
-    console.log("Firebase not configured - skipping initialization");
-    // Stub implementations for development
-    authInstance = {
-      createUser: async () => ({ uid: "test-uid" }),
-      getUserByEmail: async () => ({ uid: "test-uid", email: "test@test.com" }),
-      getUser: async () => ({ uid: "test-uid", email: "test@test.com" }),
-    };
+    const keyPath = path.resolve(__dirname, "../../firebase-key.json");
+    if (fs.existsSync(keyPath)) {
+      serviceAccount = JSON.parse(fs.readFileSync(keyPath, "utf8"));
+    }
   }
-} catch (error) {
-  console.warn("Firebase init warning:", error.message);
+
+  if (!serviceAccount) {
+    console.warn("⚠️ No Firebase credentials found (set FIREBASE_CREDENTIALS_BASE64 or provide firebase-key.json)");
+  } else {
+    if (!getApps?.length) {
+      initializeApp({
+        credential: cert(serviceAccount),
+      });
+      console.log("✅ Firebase initialized successfully!");
+    }
+
+    authInstance = getAuth();
+    dbInstance = getFirestore();
+    console.log("✅ Auth and Firestore ready");
+  }
+} catch (err) {
+  console.error("❌ Firebase error:", err.message);
 }
 
-export const auth = authInstance;
-export const db = dbInstance;
-export default admin;
+export { authInstance as auth, dbInstance as db };

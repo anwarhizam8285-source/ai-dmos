@@ -32,7 +32,7 @@ export default function ContentAgent() {
   useEffect(() => {
     const fetchKnowledge = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/api/v1/knowledge", {
+        const res = await axios.get("/api/v1/knowledge", {
           params: { companyId },
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -56,7 +56,7 @@ export default function ContentAgent() {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/v1/agents/content/generate",
+        "/api/v1/agents/content/generate",
         { companyId, knowledge: knowledgeContext, contentType, platform, topic, tone },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -75,7 +75,7 @@ export default function ContentAgent() {
 
     try {
       await axios.post(
-        "http://localhost:3000/api/v1/agents/content/save",
+        "/api/v1/agents/content/save",
         {
           companyId,
           type: contentType,

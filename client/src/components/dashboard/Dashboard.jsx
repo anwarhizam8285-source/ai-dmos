@@ -37,14 +37,14 @@ export default function Dashboard() {
     const fetchDashboardData = async () => {
       try {
         const companyRes = await axios.get(
-          `http://localhost:3000/api/v1/company/${companyId}`,
+          `/api/v1/company/${companyId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setCompany(companyRes.data.company);
 
         try {
           const analyticsRes = await axios.get(
-            "http://localhost:3000/api/v1/analytics/summary",
+            "/api/v1/analytics/summary",
             {
               params: { companyId, days: 30 },
               headers: { Authorization: `Bearer ${token}` },
@@ -66,7 +66,7 @@ export default function Dashboard() {
         }
 
         try {
-          const contentRes = await axios.get("http://localhost:3000/api/v1/content", {
+          const contentRes = await axios.get("/api/v1/content", {
             params: { companyId },
             headers: { Authorization: `Bearer ${token}` },
           });
@@ -88,7 +88,12 @@ export default function Dashboard() {
   }, [companyId, token]);
 
   if (loading) {
-    return <div className="loading">Loading dashboard...</div>;
+    return (
+      <div className="loading">
+        <div className="spinner" />
+        Loading dashboard...
+      </div>
+    );
   }
 
   return (

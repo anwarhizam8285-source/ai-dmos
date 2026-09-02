@@ -47,7 +47,7 @@ export default function CompanySetup({ onCompanyCreated }) {
     try {
       // For now, we'll save without logo upload (will add Firebase Storage in next step)
       const response = await axios.post(
-        "http://localhost:3000/api/v1/company",
+        "/api/v1/company",
         {
           ...formData,
           createdBy: localStorage.getItem("uid"),
@@ -74,7 +74,7 @@ export default function CompanySetup({ onCompanyCreated }) {
     <div className="company-container">
       <div className="company-form">
         <h1>Setup Your Company Profile</h1>
-        <p className="subtitle">Let'"'"'s get to know your business</p>
+        <p className="subtitle">Let&rsquo;s get to know your business</p>
 
         <form onSubmit={handleSubmit}>
           {/* Logo Upload */}

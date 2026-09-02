@@ -1,4 +1,8 @@
-﻿runtime: nodejs24
+﻿# NOTE: This file configures App Engine Flex, NOT Cloud Run.
+# Cloud Run ignores app.yaml — its config comes from `gcloud run deploy` flags/env vars
+# (see the deployment command in DEPLOYMENT.md). Kept here only if App Engine is used as
+# an alternative deployment target.
+runtime: nodejs24
 env: flex
 
 automatic_scaling:
@@ -9,7 +13,7 @@ env_variables:
   PORT: "3000"
   NODE_ENV: "production"
   LOG_LEVEL: "info"
-  FIREBASE_PROJECT_ID: "ai-dmos-production"
+  FIREBASE_PROJECT_ID: "aidmos-production"
 
 vpc_connector: "ai-dmos-connector"
 

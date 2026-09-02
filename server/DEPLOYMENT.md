@@ -38,9 +38,10 @@ gcloud run deploy ai-dmos-backend \
 ## Environment Variables (Set in Cloud Run)
 
 Required:
-- `FIREBASE_PROJECT_ID=ai-dmos-production`
-- `FIREBASE_CREDENTIALS` (service account JSON, base64 encoded)
+- `FIREBASE_PROJECT_ID=aidmos-production`
+- `FIREBASE_CREDENTIALS_BASE64` (service account JSON, base64 encoded — see firebaseService.js)
 - `JWT_SECRET` (production secret)
+- `ANTHROPIC_API_KEY`
 - `NODE_ENV=production`
 - `PORT=3000`
 

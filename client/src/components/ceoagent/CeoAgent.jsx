@@ -38,7 +38,7 @@ export default function CeoAgent() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/v1/agents/ceo/ask",
+        "/api/v1/agents/ceo/ask",
         { companyId, message: userMessage },
         { headers: { Authorization: `Bearer ${token}` } }
       );

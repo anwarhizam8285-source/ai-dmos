@@ -7,19 +7,24 @@ import Dashboard from "./components/dashboard/Dashboard";
 import "./App.css";
 
 function AppContent() {
-  const { user, loading } = useAuth();
+  const { user, loading, login } = useAuth();
   const [showRegister, setShowRegister] = useState(false);
   const [companyId, setCompanyId] = useState(localStorage.getItem("companyId"));
 
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <div className="loading">
+        <div className="spinner" />
+        Loading...
+      </div>
+    );
   }
 
   if (!user) {
     return showRegister ? (
-      <Register onRegisterSuccess={() => setShowRegister(false)} />
+      <Register onRegisterSuccess={login} onSwitchToLogin={() => setShowRegister(false)} />
     ) : (
-      <Login onLoginSuccess={() => {}} />
+      <Login onLoginSuccess={login} onSwitchToRegister={() => setShowRegister(true)} />
     );
   }
 

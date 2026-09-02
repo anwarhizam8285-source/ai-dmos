@@ -2,7 +2,7 @@
 import axios from "axios";
 import "./Auth.css";
 
-export default function Register({ onRegisterSuccess }) {
+export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -27,7 +27,7 @@ export default function Register({ onRegisterSuccess }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/v1/auth/register",
+        "/api/v1/auth/register",
         { email, password }
       );
 
@@ -93,7 +93,16 @@ export default function Register({ onRegisterSuccess }) {
         </form>
 
         <p className="auth-link">
-          Already have an account? <a href="#login">Login here</a>
+          Already have an account?{" "}
+          <a
+            href="#login"
+            onClick={(e) => {
+              e.preventDefault();
+              onSwitchToLogin();
+            }}
+          >
+            Login here
+          </a>
         </p>
       </div>
     </div>
