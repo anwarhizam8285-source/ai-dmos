@@ -1,4 +1,4 @@
-# Meta Ads Agent — API Routes (Sprint 2)
+# Meta Ads Agent — API Routes (Sprint 2 + Sprint 3)
 
 Base path: `/api/v1/agents/meta-ads`
 
@@ -40,6 +40,26 @@ Body: `{ companyId, campaignName, objective?, budget?, audience?, creative? }`.
 **Skeleton** — persists a `status: "draft"` record to Firestore. Does **not** call
 the Meta Marketing API yet (that's Sprint 3).
 **201** `{ success: true, campaignId, message }`
+
+### `POST /generate-campaign` (Sprint 3)
+Body: `{ companyId, campaignInput }` — see `CAMPAIGN_CREATION.md` for the full
+`campaignInput` shape. Validates the input, asks Claude to draft a full campaign
+(3 ad copy variations, audience recommendations, budget allocation, projected
+metrics, recommendations), and saves it as a Firestore `status: "DRAFT"` record.
+Nothing is sent to Meta at this step.
+**201** `{ success: true, campaignId, generatedCampaign, usage, cost, message }`
+**400** validation failure — `{ error, errors: [...] }` with every problem found.
+
+### `POST /approve-campaign` (Sprint 3)
+Body: `{ companyId, campaignId, selections: { copyVariation, audience }, creative?, pageId? }`.
+Pushes an approved `DRAFT` to the **real** Meta Marketing API: creates a real
+Campaign (budget via Campaign Budget Optimization) + AdSet (age/geo/interest
+targeting, interests resolved to Meta IDs via `/search`), both created `PAUSED`.
+An Ad (with creative) is only created if `pageId` (a Facebook Page ID) is
+supplied — this codebase has no Page-connection flow yet, so by default only
+Campaign + AdSet are real. Marks the Firestore record `ACTIVE` on success.
+**200** `{ success: true, campaignId, metaCampaignId, metaAdSetId, metaAdId, adCreated, message }`
+**404** campaign not found. **409** campaign not `DRAFT`, or Meta not connected.
 
 ### `GET /campaigns?companyId=...`
 Lists campaign drafts for a company from Firestore.

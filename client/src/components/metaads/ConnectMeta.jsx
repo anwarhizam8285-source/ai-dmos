@@ -54,56 +54,52 @@ export default function ConnectMeta() {
 
   if (loading) {
     return (
-      <div className="meta-ads-container">
-        <div className="meta-ads-card">
-          <div className="spinner" />
-          Loading Meta connection...
-        </div>
+      <div className="meta-ads-card">
+        <div className="spinner" />
+        Loading Meta connection...
       </div>
     );
   }
 
   return (
-    <div className="meta-ads-container">
-      <div className="meta-ads-card">
-        <h2>📣 Meta Ads Agent</h2>
-        <p className="subtitle">Connect your Meta Ads account to let AI-DMOS manage campaigns</p>
+    <div className="meta-ads-card">
+      <h2>📣 Meta Ads Agent</h2>
+      <p className="subtitle">Connect your Meta Ads account to let AI-DMOS manage campaigns</p>
 
-        {banner && <div className={`banner banner-${banner.type}`}>{banner.text}</div>}
-        {error && <div className="error-message">{error}</div>}
+      {banner && <div className={`banner banner-${banner.type}`}>{banner.text}</div>}
+      {error && <div className="error-message">{error}</div>}
 
-        {connected ? (
-          <div className="meta-status connected">
-            <div className="status-row">
-              <span className="status-dot" />
-              <span className="status-text">Meta Account Connected</span>
-            </div>
-            <div className="meta-details">
-              {status?.metaAdAccountId && (
-                <div className="detail-row">
-                  <span className="label">Ad Account:</span>
-                  <span className="value">{status.metaAdAccountId}</span>
-                </div>
-              )}
-              {status?.scopes && (
-                <div className="detail-row">
-                  <span className="label">Scopes:</span>
-                  <span className="value">{status.scopes.join(", ")}</span>
-                </div>
-              )}
-            </div>
-            <button className="btn-secondary" onClick={disconnectMeta} disabled={connecting}>
-              {connecting ? "Disconnecting..." : "Disconnect"}
-            </button>
+      {connected ? (
+        <div className="meta-status connected">
+          <div className="status-row">
+            <span className="status-dot" />
+            <span className="status-text">Meta Account Connected</span>
           </div>
-        ) : (
-          <div className="meta-status disconnected">
-            <button className="btn-primary" onClick={connectMeta} disabled={connecting}>
-              {connecting ? "Redirecting to Meta..." : "Connect Meta Account"}
-            </button>
+          <div className="meta-details">
+            {status?.metaAdAccountId && (
+              <div className="detail-row">
+                <span className="label">Ad Account:</span>
+                <span className="value">{status.metaAdAccountId}</span>
+              </div>
+            )}
+            {status?.scopes && (
+              <div className="detail-row">
+                <span className="label">Scopes:</span>
+                <span className="value">{status.scopes.join(", ")}</span>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+          <button className="btn-secondary" onClick={disconnectMeta} disabled={connecting}>
+            {connecting ? "Disconnecting..." : "Disconnect"}
+          </button>
+        </div>
+      ) : (
+        <div className="meta-status disconnected">
+          <button className="btn-primary" onClick={connectMeta} disabled={connecting}>
+            {connecting ? "Redirecting to Meta..." : "Connect Meta Account"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

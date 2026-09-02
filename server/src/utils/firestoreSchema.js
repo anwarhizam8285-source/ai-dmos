@@ -179,9 +179,17 @@ export const FIRESTORE_SCHEMA = {
       endDate: "timestamp | null",
       budget: "object ({ amount, type, currency })",
       audience: "object ({ country, ageMin, ageMax, interests, lookalikeBased, excludedAudiences })",
-      creative: "object ({ primaryText, headline, description, imageUrl, videoUrl })",
+      creative: "object ({ primaryText, headline, description, imageUrl, videoUrl }) | null",
       placements: "object ({ facebook, instagram, audience_network, messenger })",
+      productInfo:
+        "object ({ name, description, landingPageUrl, targetAction }) - Sprint 3, needed to relaunch/relink an approved campaign",
+      aiGeneration:
+        "object ({ generatedAt, adCopyVariations, audienceRecommendations, budgetAllocation, expectedMetrics, campaignStructure, recommendations }) | null - Sprint 3, Claude's full generation output for DRAFT campaigns",
+      approved:
+        "object ({ selectedCopyVariation, selectedAudience, approvedAt }) | null - Sprint 3, set when the user approves a draft",
       metaCampaignId: "string | null",
+      metaAdSetId: "string | null - Sprint 3",
+      metaAdId: "string | null - Sprint 3, null unless a Facebook Page ID was supplied at approval",
       metaAdAccountId: "string | null",
       lastPerformanceUpdate: "timestamp | null",
       createdBy: "enum: claude-ai|user",

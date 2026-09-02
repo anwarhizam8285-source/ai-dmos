@@ -6,7 +6,7 @@ import CeoAgent from "../ceoagent/CeoAgent";
 import ContentAgent from "../contentagent/ContentAgent";
 import History from "../history/History";
 import Analytics from "../analytics/Analytics";
-import ConnectMeta from "../metaads/ConnectMeta";
+import MetaAdsAgent from "../metaads/MetaAdsAgent";
 import "./Dashboard.css";
 
 const TABS = [
@@ -284,7 +284,7 @@ export default function Dashboard() {
       {activeTab === "knowledge" && <KnowledgeLoader />}
       {activeTab === "ceo" && <CeoAgent />}
       {activeTab === "content" && <ContentAgent />}
-      {activeTab === "meta-ads" && <ConnectMeta />}
+      {activeTab === "meta-ads" && <MetaAdsAgent />}
       {activeTab === "history" && <History />}
       {activeTab === "analytics" && <Analytics />}
     </div>

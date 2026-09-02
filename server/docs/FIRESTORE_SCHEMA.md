@@ -34,12 +34,23 @@ in `firebaseUtils.js` are the only functions that should touch this collection.
 
 ## companies/{companyId}/campaigns/{campaignId}
 
-Draft/skeleton campaign records. Sprint 2 only writes `status: "draft"` records via
-`POST /create-campaign` — Sprint 3 pushes these to the real Meta Marketing API and
-fills in `metaCampaignId`/`metaAdAccountId`.
+Sprint 2 could only write manual `status: "draft"` records via `POST /create-campaign`.
+Sprint 3 adds the real flow: `POST /generate-campaign` writes a `status: "DRAFT"`
+record with a full `aiGeneration` block (Claude's ad copy variations, audience
+recommendations, budget allocation, projected metrics, recommendations), and
+`POST /approve-campaign` pushes it to the real Meta Marketing API (Campaign +
+AdSet, both `PAUSED`) and flips the record to `status: "ACTIVE"`, filling in
+`metaCampaignId`/`metaAdSetId`/`metaAdId`/`metaAdAccountId` and the `approved` block.
 
-Fields match the sprint spec: `budget`, `audience`, `creative`, `placements`,
-`optimization`, etc. — see `FIRESTORE_SCHEMA.campaigns` for the full field list.
+Fields match the sprint spec plus Sprint 3 additions: `budget`, `audience`,
+`creative`, `placements`, `productInfo`, `aiGeneration`, `approved`, `optimization`,
+etc. — see `FIRESTORE_SCHEMA.campaigns` in `firestoreSchema.js` for the full field list.
+
+Note the `status` enum is inconsistent across sprints: Sprint 2's manual
+`POST /create-campaign` still writes lowercase `"draft"`; Sprint 3's AI flow
+writes uppercase `"DRAFT"`/`"ACTIVE"` (matching the sprint brief). Not
+normalized here to avoid touching the working Sprint 2 route - a future sprint
+should pick one casing and migrate.
 
 ## companies/{companyId}/campaigns/{campaignId}/daily_performance/{date}
 
