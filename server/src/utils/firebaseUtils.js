@@ -214,6 +214,69 @@ export async function getUsageStats(companyId, startDate, endDate) {
   return snapshot.docs.map((doc) => doc.data());
 }
 
+// Meta Ads token operations
+export async function storeMetaToken(companyId, tokenData) {
+  return await db
+    .collection(FIRESTORE_COLLECTIONS.META_TOKENS(companyId))
+    .doc("token_metadata")
+    .set({ metaToken: tokenData }, { merge: true });
+}
+
+export async function getMetaToken(companyId) {
+  const doc = await db
+    .collection(FIRESTORE_COLLECTIONS.META_TOKENS(companyId))
+    .doc("token_metadata")
+    .get();
+  return doc.exists ? doc.data().metaToken : null;
+}
+
+export async function deleteMetaToken(companyId) {
+  return await db
+    .collection(FIRESTORE_COLLECTIONS.META_TOKENS(companyId))
+    .doc("token_metadata")
+    .delete();
+}
+
+// Campaign operations (Sprint 2 skeleton)
+export async function createCampaign(companyId, campaignId, campaignData) {
+  return await db
+    .collection(FIRESTORE_COLLECTIONS.CAMPAIGNS(companyId))
+    .doc(campaignId)
+    .set({
+      campaignId,
+      companyId,
+      ...campaignData,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+}
+
+export async function getCampaign(companyId, campaignId) {
+  const doc = await db
+    .collection(FIRESTORE_COLLECTIONS.CAMPAIGNS(companyId))
+    .doc(campaignId)
+    .get();
+  return doc.exists ? doc.data() : null;
+}
+
+export async function listCampaigns(companyId) {
+  const snapshot = await db
+    .collection(FIRESTORE_COLLECTIONS.CAMPAIGNS(companyId))
+    .orderBy("createdAt", "desc")
+    .get();
+  return snapshot.docs.map((doc) => doc.data());
+}
+
+export async function updateCampaign(companyId, campaignId, updates) {
+  return await db
+    .collection(FIRESTORE_COLLECTIONS.CAMPAIGNS(companyId))
+    .doc(campaignId)
+    .update({
+      ...updates,
+      updatedAt: new Date(),
+    });
+}
+
 // Delete Knowledge document
 export async function deleteKnowledge(companyId, documentId) {
   return await db

@@ -6,6 +6,7 @@ import CeoAgent from "../ceoagent/CeoAgent";
 import ContentAgent from "../contentagent/ContentAgent";
 import History from "../history/History";
 import Analytics from "../analytics/Analytics";
+import ConnectMeta from "../metaads/ConnectMeta";
 import "./Dashboard.css";
 
 const TABS = [
@@ -13,13 +14,17 @@ const TABS = [
   { key: "knowledge", label: "Knowledge" },
   { key: "ceo", label: "CEO Agent" },
   { key: "content", label: "Content Agent" },
+  { key: "meta-ads", label: "Meta Ads" },
   { key: "history", label: "History" },
   { key: "analytics", label: "Analytics" },
 ];
 
 export default function Dashboard() {
   const { token } = useAuth();
-  const [activeTab, setActiveTab] = useState("overview");
+  const initialTab = /[?&](meta_connected|meta_error)=/.test(window.location.search)
+    ? "meta-ads"
+    : "overview";
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [company, setCompany] = useState(null);
   const [stats, setStats] = useState({
     tokensUsed: 0,
@@ -225,6 +230,10 @@ export default function Dashboard() {
                 <span className="action-icon">📚</span>
                 <span className="action-label">Manage Knowledge</span>
               </button>
+              <button className="action-card" onClick={() => setActiveTab("meta-ads")}>
+                <span className="action-icon">📣</span>
+                <span className="action-label">Connect Meta Ads</span>
+              </button>
               <button className="action-card" onClick={() => setActiveTab("history")}>
                 <span className="action-icon">🕘</span>
                 <span className="action-label">View History</span>
@@ -275,6 +284,7 @@ export default function Dashboard() {
       {activeTab === "knowledge" && <KnowledgeLoader />}
       {activeTab === "ceo" && <CeoAgent />}
       {activeTab === "content" && <ContentAgent />}
+      {activeTab === "meta-ads" && <ConnectMeta />}
       {activeTab === "history" && <History />}
       {activeTab === "analytics" && <Analytics />}
     </div>

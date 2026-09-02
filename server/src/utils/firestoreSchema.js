@@ -143,6 +143,99 @@ export const FIRESTORE_SCHEMA = {
     },
     indexes: ["companyId", "date"],
   },
+
+  // Meta Ads OAuth tokens (Sprint 2)
+  metaTokens: {
+    collection: "companies/{companyId}/meta_tokens",
+    doc: "token_metadata",
+    fields: {
+      metaToken: {
+        accessToken: "string (encrypted)",
+        refreshToken: "string (encrypted) | null",
+        expiresAt: "timestamp",
+        scopes: "array<string>",
+        metaUserId: "string",
+        metaAdAccountId: "string | null",
+        isValid: "boolean",
+        lastRefreshed: "timestamp",
+        lastUsed: "timestamp | null",
+      },
+    },
+    indexes: [],
+  },
+
+  // Meta Ads campaigns (Sprint 2 skeleton, populated from Sprint 3)
+  campaigns: {
+    collection: "companies/{companyId}/campaigns",
+    doc: "{campaignId}",
+    fields: {
+      campaignId: "string (primary key)",
+      companyId: "string (parent)",
+      userId: "string",
+      name: "string",
+      objective: "string",
+      status: "string",
+      startDate: "timestamp | null",
+      endDate: "timestamp | null",
+      budget: "object ({ amount, type, currency })",
+      audience: "object ({ country, ageMin, ageMax, interests, lookalikeBased, excludedAudiences })",
+      creative: "object ({ primaryText, headline, description, imageUrl, videoUrl })",
+      placements: "object ({ facebook, instagram, audience_network, messenger })",
+      metaCampaignId: "string | null",
+      metaAdAccountId: "string | null",
+      lastPerformanceUpdate: "timestamp | null",
+      createdBy: "enum: claude-ai|user",
+      optimization: "object ({ lastOptimizationDate, optimizationsApplied, estimatedROAS })",
+      createdAt: "timestamp",
+      updatedAt: "timestamp",
+    },
+    indexes: ["companyId", "status", "createdAt"],
+  },
+
+  // Daily performance snapshots per campaign
+  dailyPerformance: {
+    collection: "campaigns/{campaignId}/daily_performance",
+    doc: "{date}",
+    fields: {
+      date: "string (YYYY-MM-DD, primary key)",
+      spend: "number",
+      impressions: "number",
+      clicks: "number",
+      ctr: "number",
+      cpc: "number",
+      results: "number",
+      costPerResult: "number",
+      frequency: "number",
+      reach: "number",
+      conversionValue: "number",
+      roas: "number",
+      qualityScore: "number",
+      vs_yesterday: "object ({ spend_change, ctr_change, cpc_change, roas_change })",
+    },
+    indexes: ["date"],
+  },
+
+  // AI-generated optimization recommendations per campaign
+  recommendations: {
+    collection: "campaigns/{campaignId}/recommendations",
+    doc: "{recommendationId}",
+    fields: {
+      recommendationId: "string (primary key)",
+      title: "string",
+      description: "string",
+      type: "enum: BUDGET_INCREASE|PAUSE_ADSET|CREATIVE_REFRESH",
+      expectedImpact: "object ({ ctrChange, roasChange, confidenceLevel })",
+      action: "object ({ targetAdSet, currentBudget, suggestedBudget, change, changePercent })",
+      status: "enum: PENDING|APPLIED|REJECTED|EXPIRED",
+      appliedAt: "timestamp | null",
+      appliedBy: "string | null",
+      generatedBy: "string (claude-ai)",
+      generatedAt: "timestamp",
+      expiresAt: "timestamp",
+      logs: "array<object>",
+    },
+    indexes: ["status", "generatedAt"],
+  },
 };
 
 export const FIRESTORE_COLLECTIONS = {
@@ -153,4 +246,10 @@ export const FIRESTORE_COLLECTIONS = {
   CONTENT: (companyId) => `companies/${companyId}/content`,
   TEMPLATES: (companyId) => `companies/${companyId}/templates`,
   USAGE: (companyId) => `companies/${companyId}/usage`,
+  META_TOKENS: (companyId) => `companies/${companyId}/meta_tokens`,
+  CAMPAIGNS: (companyId) => `companies/${companyId}/campaigns`,
+  DAILY_PERFORMANCE: (companyId, campaignId) =>
+    `companies/${companyId}/campaigns/${campaignId}/daily_performance`,
+  RECOMMENDATIONS: (companyId, campaignId) =>
+    `companies/${companyId}/campaigns/${campaignId}/recommendations`,
 };
